@@ -48,6 +48,7 @@
     <PackageReference Include="TagLibSharp" Version="2.3.0"/>
   </ItemGroup>
   <ItemGroup Label="Insane Clicks">
+    <EmbeddedResource Remove="Resources\logo.png"/>
     <EmbeddedResource Include="Resources\logo.png" LogicalName="osu.Game.Resources.logo.png"/>
   </ItemGroup>
 </Project>
