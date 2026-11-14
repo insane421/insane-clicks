@@ -13,10 +13,12 @@ using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Colour;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Rendering;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.Textures;
 using osu.Framework.Input.Events;
+using osu.Framework.IO.Stores;
 using osu.Framework.Utils;
 using osu.Game.Beatmaps.ControlPoints;
 using osu.Game.Graphics.Backgrounds;
@@ -275,7 +277,7 @@ namespace osu.Game.Screens.Menu
         }
 
         [BackgroundDependencyLoader]
-        private void load(TextureStore textures, AudioManager audio)
+        private void load(TextureStore textures, AudioManager audio, IRenderer renderer)
         {
             sampleClick = audio.Samples.Get(@"Menu/osu-logo-select");
 
@@ -284,6 +286,20 @@ namespace osu.Game.Screens.Menu
 
             logo.Texture = textures.Get(@"Menu/logo");
             ripple.Texture = textures.Get(@"Menu/logo");
+
+            // Insane Clicks: use our own embedded logo, keeping the original size so the menu layout does not change.
+            // If the embedded logo is missing, the original texture stays.
+            var original = logo.Texture;
+            var custom = new TextureStore(renderer, new TextureLoaderStore(new NamespacedResourceStore<byte[]>(new DllResourceStore(typeof(OsuLogo).Assembly), "Resources"))).Get("logo.png");
+
+            if (original != null && custom != null)
+            {
+                var size = new Vector2(original.Width, original.Height);
+                logo.Texture = custom;
+                logo.Size = size;
+                ripple.Texture = custom;
+                ripple.Size = size;
+            }
         }
 
         private int lastBeatIndex;
